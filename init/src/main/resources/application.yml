@@ -3,16 +3,16 @@ server:
   servlet:
     context-path: /kvgh
 spring:
-#  mvc:
-#    static-path-pattern: /static/**
-#  thymeleaf:
-#    cache: true
-#    encoding: UTF-8
-#    prefix: classpath:/templates/
-#    suffix: .html
-#    servlet:
-#      content-type: text/html
-#    mode: LEGACYHTML5 # 将可以使用不太严格的HTML语法
+  #  mvc:
+  #    static-path-pattern: /static/**
+  #  thymeleaf:
+  #    cache: true
+  #    encoding: UTF-8
+  #    prefix: classpath:/templates/
+  #    suffix: .html
+  #    servlet:
+  #      content-type: text/html
+  #    mode: LEGACYHTML5 # 将可以使用不太严格的HTML语法
   datasource:
     platform: mysql
     url: jdbc:mysql://127.0.0.1/kvgh?useUnicode=yes&characterEncoding=UTF-8
@@ -24,14 +24,14 @@ spring:
     show-sql: false
     database: mysql
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
 excel:
   path: C:/vhlc/excel/
-#logging:
-  #level:
+    #logging:
+    #level:
     # root: INFO
     # com.cisco.gdc: INFO
-    # com.cisco.gdc.cmms.service.web: DEBUG
+  # com.cisco.gdc.cmms.service.web: DEBUG
