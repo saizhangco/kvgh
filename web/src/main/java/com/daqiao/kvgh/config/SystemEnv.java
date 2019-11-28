@@ -19,4 +19,7 @@ public class SystemEnv {
 
     @Value("${spring.jpa.hibernate.ddl-auto}")
     private String ddlAuto;
+
+    @Value("${kvgh.branch.taxid}")
+    private String taxId;
 }

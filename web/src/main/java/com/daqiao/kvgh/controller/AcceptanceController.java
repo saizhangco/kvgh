@@ -4,10 +4,10 @@ import com.daqiao.kvgh.config.SystemEnv;
 import com.daqiao.kvgh.constant.PageConstant;
 import com.daqiao.kvgh.domain.ExcelFile;
 import com.daqiao.kvgh.domain.Stock;
-import com.daqiao.kvgh.entity.Acceptance;
-import com.daqiao.kvgh.repo.ExcelRepository;
-import com.daqiao.kvgh.repo.OrderRepository;
-import com.daqiao.kvgh.repo.UserRepository;
+import com.daqiao.kvgh.domain.Stock1;
+import com.daqiao.kvgh.entity.*;
+import com.daqiao.kvgh.repo.*;
+import com.daqiao.kvgh.utils.DateUtil;
 import com.daqiao.kvgh.utils.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,10 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import com.daqiao.kvgh.entity.Excel;
-import com.daqiao.kvgh.entity.Order;
-import com.daqiao.kvgh.entity.User;
-import com.daqiao.kvgh.repo.AcceptanceRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +45,9 @@ public class AcceptanceController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private VendorRepository vendorRepository;
+
     @GetMapping()
     public Page<Acceptance> list(@RequestParam("page") int page) {
         Pageable pageable = PageRequest.of(page, PageConstant.PAGE_SIZE, Sort.Direction.DESC, "id");
@@ -70,15 +69,16 @@ public class AcceptanceController {
 
     /**
      * 验收流程
+     *
      * @param acceptance
      */
     @PostMapping()
     public void add(@RequestBody Acceptance acceptance) {
         Order order = orderRepository.findById(acceptance.getOrderId()).get();
-        if( order == null ) {
+        if (order == null) {
             throw new RuntimeException("order is null!");
         }
-        if( Integer.parseInt(acceptance.getNumber()) <= 0 ) {
+        if (Integer.parseInt(acceptance.getNumber()) <= 0) {
             return;
         }
 //        if( order.getNumber() > Integer.parseInt(acceptance.getNumber()) ) {
@@ -92,10 +92,11 @@ public class AcceptanceController {
 //            orderRepository.save(order);
 //        } else if (order.getNumber() == Integer.parseInt(acceptance.getNumber())) {
         else {
+            acceptance.setDate(DateUtil.getDateString());
             order.setStatus(1);
             orderRepository.save(order);
             acceptanceRepository.save(acceptance);
-            if( orderRepository.countByNoLikeAndStatus(noWithoutP(order.getNo()) + "%", 0) == 0 ) {
+            if (orderRepository.countByNoLikeAndStatus(noWithoutP(order.getNo()) + "%", 0) == 0) {
                 Excel excel = excelRepository.findByOrderId(noWithoutP(order.getNo()));
                 excel.setStatus(1);
                 excelRepository.save(excel);
@@ -105,27 +106,27 @@ public class AcceptanceController {
 
     private String noWithoutP(String no) {
         String result = no;
-        while(result.endsWith("p")){
-            result = result.substring(0, result.length()-1);
+        while (result.endsWith("p")) {
+            result = result.substring(0, result.length() - 1);
         }
         return result;
     }
 
-    @PostMapping("/file")
+    @PostMapping("/file1")
     public ExcelFile generateExcelFile(@RequestBody List<Long> idList) {
         ExcelFile excelFile = new ExcelFile();
         List<Stock> stockList = new ArrayList<>();
 
-        for( Long id : idList) {
+        for (Long id : idList) {
             Excel excel = excelRepository.findById(id).get();
             List<Order> orders = orderRepository.findAllByNoLike(excel.getOrderId() + "%");
-            for( Order order : orders ) {
+            for (Order order : orders) {
                 Stock stock = new Stock();
                 Acceptance acceptance = acceptanceRepository.findByOrderId(order.getId());
                 User purchaser = userRepository.findByUsername(order.getApplicant());
                 User orderer = userRepository.findByUsername(order.getOrderer());
                 User accepter = userRepository.findByUsername(acceptance.getAccepter());
-                stock.setHospitalId(order.getHospitalCode());
+                stock.setHospitalId(systemEnv.getTaxId());
                 stock.setOrderNo(order.getNo());
                 stock.setOrderDate(order.getDate());
                 stock.setOrderType(order.getType());
@@ -142,12 +143,19 @@ public class AcceptanceController {
                 stock.setOrdererEmail(orderer.getEmail());
                 stock.setDeliveryAddress(order.getDeliveryAddress());
                 stock.setHint(order.getHint());
-                stock.setOrderAmount(order.getAmount().toString());
-                stock.setInternationalBarCode("");
+                /*
+                 * 订单金额(发票金额) = 申请金额 + 药品折让
+                 * 取整数
+                 */
+                stock.setOrderAmount("" + new Float(acceptance.getMedicinalDiscount() + acceptance.getAmount()).longValue());
+                stock.setInternationalBarCode(order.getHospitalCode());
                 stock.setUnit(order.getUnit());
                 stock.setUnitPrice(order.getUnitPrice().toString());
                 stock.setOrderNumber(order.getNumber().toString());
-                stock.setAcceptanceDate(acceptance.getDate());
+                /*
+                 * 验收日期，使用来源字段代替
+                 */
+                stock.setAcceptanceDate(acceptance.getSource());
                 stock.setAccepter(acceptance.getAccepter());
                 stock.setAccepterPhone(accepter.getPhone());
                 stock.setAccepterFax(accepter.getFax());
@@ -156,11 +164,20 @@ public class AcceptanceController {
                 stock.setAcceptanceNumber(acceptance.getNumber());
                 stock.setPeriodOfValidity(acceptance.getPeriodOfValidity());
                 stock.setBatchNumber(acceptance.getBatchNumber());
-                stock.setVendorCode(acceptance.getVendorCode());
+                Vendor vendor = vendorRepository.getVendorByName(acceptance.getVendorCode());
+                if (vendor != null) {
+                    stock.setVendorCode(vendor.getCode());
+                } else {
+                    stock.setVendorCode(acceptance.getVendorCode());
+                }
                 stock.setInvoiceNo(acceptance.getInvoiceNo());
-                stock.setApplicationAmount(acceptance.getAmount().toString());
-                stock.setMaterialDiscount(acceptance.getMaterialDiscount().toString());
-                stock.setMedicinalDiscount(acceptance.getMedicinalDiscount().toString());
+                /*
+                 * 申请金额(发票金额) = 申请金额 + 药品折让
+                 * 取整数
+                 */
+                stock.setApplicationAmount("" + new Float(acceptance.getMedicinalDiscount() + acceptance.getAmount()).longValue());
+                stock.setMaterialDiscount("" + acceptance.getMaterialDiscount().longValue());
+                stock.setMedicinalDiscount("" + acceptance.getMedicinalDiscount().longValue());
                 stock.setDescription(acceptance.getDescription());
                 stockList.add(stock);
             }
@@ -176,6 +193,65 @@ public class AcceptanceController {
             excelFile.setGenerate(false);
         }
         return excelFile;
+    }
+
+    @PostMapping("/file")
+    public ExcelFile generateExcelFile1(@RequestBody List<Long> idList) {
+        ExcelFile excelFile = new ExcelFile();
+        List<Stock1> stockList = new ArrayList<>();
+
+        for (Long id : idList) {
+            Excel excel = excelRepository.findById(id).get();
+            List<Order> orders = orderRepository.findAllByNoLike(excel.getOrderId() + "%");
+            for (Order order : orders) {
+                Stock1 stock = new Stock1();
+                Acceptance acceptance = acceptanceRepository.findByOrderId(order.getId());
+                User purchaser = userRepository.findByUsername(order.getApplicant());
+                User orderer = userRepository.findByUsername(order.getOrderer());
+                User accepter = userRepository.findByUsername(acceptance.getAccepter());
+
+                stock.setCode("0");
+                Vendor vendor = vendorRepository.getVendorByName(acceptance.getVendorCode());
+                if (vendor != null) {
+                    stock.setVendor(convertVendor(vendor.getCode()));
+                } else {
+                    stock.setVendor(convertVendor(acceptance.getVendorCode()));
+                }
+                stock.setInvoiceNumber(acceptance.getInvoiceNo());
+                stock.setAccountingDay(acceptance.getSource());
+                stock.setItemCode(order.getHospitalCode());
+                stock.setPurchaseQuantity(acceptance.getNumber());
+                stock.setReceivedAmount("" + acceptance.getAmount().longValue());
+                stock.setAllowanceAmount("" + acceptance.getMedicinalDiscount().longValue());
+                stock.setInvoiceAmount("" + new Float(acceptance.getMedicinalDiscount() + acceptance.getAmount()).longValue());
+                stock.setGift("");
+                stock.setBatchNumber(acceptance.getBatchNumber());
+                stock.setEffectiveDate(acceptance.getPeriodOfValidity());
+                stock.setRemarks("");
+                stock.setSource(acceptance.getDescription());
+                stock.setGrade("");
+                stock.setVendorCode("");
+
+                stockList.add(stock);
+            }
+        }
+        excelFile.setPath(systemEnv.getExcelPath());
+        excelFile.setName(UUID.randomUUID().toString() + ".xls");
+        try {
+            excelFile.setGenerate(true);
+            ExcelUtil.createExcel(excelFile.getPath() + excelFile.getName(), stockList, Stock1.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            excelFile.setGenerate(false);
+        }
+        return excelFile;
+    }
+
+    private String convertVendor(String vendor) {
+        for (int i = vendor.length(); i < 4; i++) {
+            vendor = "0" + vendor;
+        }
+        return vendor;
     }
 
     @DeleteMapping("/{id}")
