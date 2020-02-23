@@ -15,7 +15,7 @@ spring:
 #    mode: LEGACYHTML5 # 将可以使用不太严格的HTML语法
   datasource:
     platform: mysql
-    url: jdbc:mysql://127.0.0.1/kvgh?useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1/kvgh?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
     username: root
     password: Rhs$1234
     sql-script-encoding: UTF-8
