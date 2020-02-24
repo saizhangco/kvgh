@@ -26,8 +26,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private MedicineRepository medicineRepository;
 
-    private static final String EXCEL_PATH_VENDOR = "C:/vhlc/init/Vendors 1081014.xlsx";
-    private static final String EXCEL_PATH_MEDICINE1 = "C:/vhlc/init/Mediicines 1081014.xlsx";
+    private static final String EXCEL_PATH_VENDOR = "/home/saizhang/kvgh/data/Vendor.xlsx";
+    private static final String EXCEL_PATH_MEDICINE1 = "/home/saizhang/kvgh/data/Medicine.xls";
     private static final String EXCEL_PATH_MEDICINE2 = "C:/vhlc/init/ShortListMedicine1081006.xls";
 
     @Override
@@ -36,6 +36,7 @@ public class ExcelServiceImpl implements ExcelService {
         try {
             List<VendorEO> vendorEOList = ExcelUtil.readExcel(EXCEL_PATH_VENDOR, VendorEO.class);
             for (VendorEO vendorEO : vendorEOList) {
+                vendorEO.setName(vendorEO.getName().trim());
                 vendorEO.setCode("" + new Double(Double.parseDouble(vendorEO.getCode())).intValue());
                 if (vendorEO.getIsNew() == null) {
                     vendorEO.setIsNew(false);

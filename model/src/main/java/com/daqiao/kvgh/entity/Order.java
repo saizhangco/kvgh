@@ -38,4 +38,8 @@ public class Order {
       */
     private Integer status;
     private String vendor;
+    /**
+     * 1.1 版本，新增字段
+     */
+    private String vendorBarCode;
 }
