@@ -113,6 +113,11 @@ public class ExcelController {
         return excelList;
     }
 
+    @GetMapping("/vendorBarCode")
+    public List<Excel> listByVendorBarCode(@RequestParam("vendorBarCode") String vendorBarCode) {
+        return null;
+    }
+
     @GetMapping("/{id}")
     public Excel getById(@PathVariable("id") long id) {
         Excel excel = excelRepository.findById(id).get();

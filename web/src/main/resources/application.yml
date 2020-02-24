@@ -28,6 +28,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
 excel:
   path: C:/vhlc/excel/
 #logging:

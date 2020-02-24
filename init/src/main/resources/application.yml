@@ -15,7 +15,7 @@ spring:
   #    mode: LEGACYHTML5 # 将可以使用不太严格的HTML语法
   datasource:
     platform: mysql
-    url: jdbc:mysql://127.0.0.1/kvgh?useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1/kvgh?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
     username: root
     password: Rhs$1234
     sql-script-encoding: UTF-8
@@ -24,12 +24,16 @@ spring:
     show-sql: false
     database: mysql
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
 excel:
   path: C:/vhlc/excel/
+kvgh:
+  init:
+    excel-path-vendor: C:/vhlc/init/Vendors 1081014.xlsx
+    excel-path-medicine: C:/vhlc/init/Mediicines 1081014.xlsx
     #logging:
     #level:
     # root: INFO
