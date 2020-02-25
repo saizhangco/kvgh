@@ -1,5 +1,6 @@
 package com.daqiao.kvgh;
 
+import com.daqiao.kvgh.utils.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -29,7 +30,9 @@ public class InitApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        excelService.loadVendorFromExcel();
-        excelService.loadMedicineFromExcel();
+        // excelService.loadVendorFromExcel();
+        // excelService.loadMedicineFromExcel();
+        // System.out.println(TextUtil.getUUID("KVGH"));
+        excelService.updateVendorBarCode();
     }
 }

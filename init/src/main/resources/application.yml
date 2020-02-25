@@ -28,6 +28,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
+  flyway:
+    enabled: false
 excel:
   path: C:/vhlc/excel/
 kvgh:

@@ -24,4 +24,5 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
     List<Order> findAllByNoLike(String no);
     Integer countByNoLikeAndStatus(String no, Integer status);
     List<Order> findFirst15ByStatusAndHospitalCode(Integer status, String hospitalCode);
+    List<Order> findFirst15ByStatusAndVendorBarCode(Integer status, String vendorBarCode);
 }

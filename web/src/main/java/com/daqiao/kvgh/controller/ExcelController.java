@@ -98,8 +98,12 @@ public class ExcelController {
 
     @GetMapping("/hospitalCode")
     public List<Excel> listByHospitalCode(@RequestParam("hospitalCode") String hospitalCode) {
-        HashSet<String> orderNoList = new HashSet<>();
         List<Order> orderList = orderRepository.findFirst15ByStatusAndHospitalCode(0, hospitalCode);
+        return getExcelListFromOrderList(orderList);
+    }
+
+    private List<Excel> getExcelListFromOrderList(List<Order> orderList) {
+        HashSet<String> orderNoList = new HashSet<>();
         for (Order order : orderList) {
             orderNoList.add(order.getNo());
         }
@@ -115,7 +119,8 @@ public class ExcelController {
 
     @GetMapping("/vendorBarCode")
     public List<Excel> listByVendorBarCode(@RequestParam("vendorBarCode") String vendorBarCode) {
-        return null;
+        List<Order> orderList = orderRepository.findFirst15ByStatusAndVendorBarCode(0, vendorBarCode);
+        return getExcelListFromOrderList(orderList);
     }
 
     @GetMapping("/{id}")
