@@ -1,5 +1,5 @@
 
-use kvgh;
+
 
 insert into t_user value(null, 'E.R.', 'jizhe@kvgh.com', '1234567890', '1234', '1234567890', 'Kenny');
 insert into t_user value(null, 'Internal', 'neike@kvgh.com', '1234567890', '1234', '1234567890', 'Ricky');

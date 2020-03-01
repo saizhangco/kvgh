@@ -67,6 +67,9 @@ public class MedicineEO {
     @JsonProperty("備註二")
     private String comment2;
 
+    @JsonProperty("廠商條碼")
+    private String vendorBarCode;
+
     public Medicine getMedicine() {
         Medicine medicine = new Medicine();
         medicine.setHealthInsuranceCode(healthInsuranceCode);
@@ -87,6 +90,7 @@ public class MedicineEO {
         medicine.setHospitalBarCode(hospitalBarCode);
         medicine.setComment1(comment1);
         medicine.setComment2(comment2);
+        medicine.setNewVendorBarCode(vendorBarCode);
         return medicine;
     }
 }

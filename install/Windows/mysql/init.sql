@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS `kvgh` default character set utf8 collate utf8_general_ci;
+DROP DATABASE IF EXISTS `kvgh1`;
 
-CREATE DATABASE `kvgh`;
+CREATE DATABASE `kvgh1` default character set utf8 collate utf8_general_ci;
 
-USE `kvgh`;
+USE `kvgh1`;
 
 DROP TABLE IF EXISTS t_acceptance;
 

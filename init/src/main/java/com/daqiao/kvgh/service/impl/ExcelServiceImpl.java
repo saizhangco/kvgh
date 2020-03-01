@@ -35,15 +35,15 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private MedicineRepository medicineRepository;
 
-    private static final String EXCEL_PATH_VENDOR = "C:/vhlc/init/Vendors 1081014.xlsx";
-    private static final String EXCEL_PATH_MEDICINE1 = "C:/vhlc/init/Mediicines 1081014.xlsx";
-    private static final String EXCEL_PATH_MEDICINE2 = "C:/vhlc/init/ShortListMedicine1081006.xls";
+    private static final String EXCEL_PATH_VENDOR = "/install/Excel/Vendors.xlsx";
+    private static final String EXCEL_PATH_MEDICINE1 = "/install/Excel/Mediicines.xlsx";
 
     @Override
     public void loadVendorFromExcel() {
+        String projectDir = System.getProperty("user.dir");
         int count = 1;
         try {
-            List<VendorEO> vendorEOList = ExcelUtil.readExcel(EXCEL_PATH_VENDOR, VendorEO.class);
+            List<VendorEO> vendorEOList = ExcelUtil.readExcel(projectDir + EXCEL_PATH_VENDOR, VendorEO.class);
             for (VendorEO vendorEO : vendorEOList) {
                 vendorEO.setName(vendorEO.getName().trim());
                 vendorEO.setCode("" + new Double(Double.parseDouble(vendorEO.getCode())).intValue());
@@ -60,9 +60,10 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void loadMedicineFromExcel() {
+        String projectDir = System.getProperty("user.dir");
         int count = 1;
         try {
-            List<MedicineEO> medicineEOList = ExcelUtil.readExcel(EXCEL_PATH_MEDICINE1, MedicineEO.class);
+            List<MedicineEO> medicineEOList = ExcelUtil.readExcel(projectDir + EXCEL_PATH_MEDICINE1, MedicineEO.class);
             for (MedicineEO medicineEO : medicineEOList) {
                 if (medicineRepository.findByName(medicineEO.getName()) == null
                         && medicineEO.getName() != null) {

@@ -30,9 +30,7 @@ public class InitApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // excelService.loadVendorFromExcel();
-        // excelService.loadMedicineFromExcel();
-        // System.out.println(TextUtil.getUUID("KVGH"));
-        excelService.updateVendorBarCode();
+        excelService.loadVendorFromExcel();
+        excelService.loadMedicineFromExcel();
     }
 }

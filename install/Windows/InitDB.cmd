@@ -1,0 +1,6 @@
+@echo off
+echo start...
+cd ../mysql
+echo %cd%
+mysql -u root -pRhs$1234 <init.sql
+echo end.....
