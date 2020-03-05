@@ -33,7 +33,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>init-service</finalName>
+        <finalName>kvgh-init</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

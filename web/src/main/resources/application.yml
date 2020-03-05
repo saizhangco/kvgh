@@ -33,6 +33,11 @@ spring:
     baselineOnMigrate: true
 excel:
   path: C:/vhlc/excel/
+license:
+  app-name: Kvgh
+  app-version: v1.1
+  mac-address: xx-xx-xx-xx-xx-xx
+  file: Kvgh-v1.1-20200331.dqlf
 #logging:
   #level:
     # root: INFO
